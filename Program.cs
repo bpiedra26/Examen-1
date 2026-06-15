@@ -1,140 +1,148 @@
-﻿//Examen 1
-//Brandy Piedra Mena 
+﻿using System;
 
-string[] productos = { "Cafe", "Sandwich", "Refresco", "Galleta", "Empanada" };
-int[] precios = { 800, 1500, 1000, 700, 1200 };
-
-int[,] pedidos = new int[10, 3];
-// Columna 0 = producto
-// Columna 1 = cantidad
-// Columna 2 = estado
-
-int cantidadPedidos = 0;
-int opcion = 0;
-
-do
+class Program
 {
-    Console.WriteLine();
-    Console.WriteLine("===== Soda / Cafeteria Solidaria =====");
-    Console.WriteLine("1. Ver catalogo");
-    Console.WriteLine("2. Registrar pedido");
-    Console.WriteLine("3. Ver pedidos");
-    Console.WriteLine("4. Salir");
-    Console.Write("Digite una opcion: ");
-    opcion = Convert.ToInt32(Console.ReadLine());
-
-    if (opcion == 1)
+    static void Main()
     {
-        MostrarCatalogo();
-    }
-    else if (opcion == 2)
-    {
-        RegistrarPedido();
-    }
-    else if (opcion == 3)
-    {
-        MostrarPedidos();
-    }
-    else if (opcion == 4)
-    {
-        Console.WriteLine("Saliendo del sistema...");
-    }
-    else
-    {
-        Console.WriteLine("Opcion incorrecta");
-    }
+        // Vector principal del catalogo
+        string[] catalogo = { "Cafe", "Sandwich", "Refresco", "Galleta", "Empanada" };
 
-} while (opcion != 4);
+        // Vector paralelo de precios
+        double[] precios = { 800, 1500, 1000, 700, 1200 };
 
+        // Matriz de registros
+        // Columna 0 = indice del producto
+        // Columna 1 = cantidad
+        // Columna 2 = estado
+        int[,] registros = new int[50, 3];
 
-// Metodo para mostrar el catalogo
-void MostrarCatalogo()
-{
-    Console.WriteLine();
-    Console.WriteLine("Catalogo de productos");
+        int contador = 0;
+        int opcion = 0;
 
-    for (int i = 0; i < productos.Length; i++)
-    {
-        Console.WriteLine((i + 1) + ". " + productos[i] + " - ₡" + precios[i]);
-    }
-}
-
-
-// Metodo para registrar un pedido
-void RegistrarPedido()
-{
-    if (cantidadPedidos >= 10)
-    {
-        Console.WriteLine("Ya no se pueden registrar mas pedidos.");
-    }
-    else
-    {
-        MostrarCatalogo();
-
-        Console.WriteLine();
-        Console.Write("Digite el numero del producto: ");
-        int producto = Convert.ToInt32(Console.ReadLine());
-
-        Console.Write("Digite la cantidad: ");
-        int cantidad = Convert.ToInt32(Console.ReadLine());
-
-        producto = producto - 1;
-
-        if (producto >= 0 && producto < productos.Length && cantidad > 0)
+        do
         {
-            pedidos[cantidadPedidos, 0] = producto;
-            pedidos[cantidadPedidos, 1] = cantidad;
-            pedidos[cantidadPedidos, 2] = 1; // 1 = activo
+            Console.WriteLine();
+            Console.WriteLine("1. Registrar pedido");
+            Console.WriteLine("2. Mostrar registros");
+            Console.WriteLine("3. Salir");
+            Console.Write("Digite una opcion: ");
+            opcion = Convert.ToInt32(Console.ReadLine());
 
-            Console.WriteLine("Pedido registrado correctamente.");
-            Console.WriteLine("Total: ₡" + (precios[producto] * cantidad));
+            switch (opcion)
+            {
+                case 1:
+                    // Correccion: se usa ref para que el contador se actualice
+                    RegistrarEvento(registros, catalogo, precios, ref contador);
+                    break;
 
-            cantidadPedidos++;
+                case 2:
+                    MostrarRegistros(registros, catalogo, precios, contador);
+                    break;
+
+                case 3:
+                    Console.WriteLine("Saliendo...");
+                    break;
+
+                default:
+                    Console.WriteLine("Opcion incorrecta");
+                    break;
+            }
+
+        } while (opcion != 3);
+    }
+
+    static void RegistrarEvento(int[,] matriz, string[] catalogo, double[] precios, ref int contador)
+    {
+        // Correccion: validar que no se pase del tamaño de la matriz
+        if (contador >= 50)
+        {
+            Console.WriteLine("Ya no se pueden registrar mas pedidos.");
         }
         else
         {
-            Console.WriteLine("Datos incorrectos.");
-        }
-    }
-}
+            string codigo;
 
+            Console.WriteLine();
+            Console.WriteLine("Catalogo de productos:");
 
-// Metodo para mostrar los pedidos registrados
-void MostrarPedidos()
-{
-    Console.WriteLine();
-    Console.WriteLine("Reporte de pedidos");
-
-    if (cantidadPedidos == 0)
-    {
-        Console.WriteLine("No hay pedidos registrados.");
-    }
-    else
-    {
-        for (int i = 0; i < cantidadPedidos; i++)
-        {
-            int producto = pedidos[i, 0];
-            int cantidad = pedidos[i, 1];
-            int estado = pedidos[i, 2];
-            int total = precios[producto] * cantidad;
-
-            string nombreEstado = "";
-
-            if (estado == 1)
+            for (int i = 0; i < catalogo.Length; i++)
             {
-                nombreEstado = "Activo";
-            }
-            else
-            {
-                nombreEstado = "Finalizado";
+                Console.WriteLine(catalogo[i] + " - Precio: " + precios[i]);
             }
 
             Console.WriteLine();
-            Console.WriteLine("Pedido #" + (i + 1));
-            Console.WriteLine("Producto: " + productos[producto]);
-            Console.WriteLine("Cantidad: " + cantidad);
-            Console.WriteLine("Estado: " + nombreEstado);
-            Console.WriteLine("Total: ₡" + total);
+            Console.Write("Ingrese codigo del producto: ");
+            codigo = Console.ReadLine();
+
+            int pos = -1;
+
+            // Correccion: se usa < catalogo.Length, no <= catalogo.Length
+            for (int i = 0; i < catalogo.Length; i++)
+            {
+                if (catalogo[i] == codigo)
+                {
+                    pos = i;
+                }
+            }
+
+            if (pos == -1)
+            {
+                Console.WriteLine("Codigo no encontrado.");
+            }
+            else
+            {
+                Console.Write("Cantidad: ");
+                int cantidad = Convert.ToInt32(Console.ReadLine());
+
+                if (cantidad <= 0)
+                {
+                    Console.WriteLine("La cantidad debe ser mayor a cero.");
+                }
+                else
+                {
+                    // Se guarda el indice del producto
+                    matriz[contador, 0] = pos;
+
+                    // Se guarda la cantidad
+                    matriz[contador, 1] = cantidad;
+
+                    // Estado 1 = activo
+                    matriz[contador, 2] = 1;
+
+                    contador++;
+
+                    Console.WriteLine("Pedido registrado correctamente.");
+                }
+            }
+        }
+    }
+
+    static void MostrarRegistros(int[,] matriz, string[] catalogo, double[] precios, int contador)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Registros guardados:");
+
+        if (contador == 0)
+        {
+            Console.WriteLine("No hay registros.");
+        }
+        else
+        {
+            for (int i = 0; i < contador; i++)
+            {
+                int posicionProducto = matriz[i, 0];
+                int cantidad = matriz[i, 1];
+                int estado = matriz[i, 2];
+
+                double total = precios[posicionProducto] * cantidad;
+
+                Console.WriteLine();
+                Console.WriteLine("Pedido #" + (i + 1));
+                Console.WriteLine("Producto: " + catalogo[posicionProducto]);
+                Console.WriteLine("Cantidad: " + cantidad);
+                Console.WriteLine("Estado: " + estado);
+                Console.WriteLine("Total: " + total);
+            }
         }
     }
 }
